@@ -1,36 +1,49 @@
-# Sistema-de-Gestao-das-Olimpiadas-SGO-
-
 # 🏅 Sistema de Gestão das Olimpíadas (SGO)
 
-## 📘 Descrição do Sistema
-O **Sistema de Gestão das Olimpíadas (SGO)** tem como objetivo gerenciar competições, inscrições de atletas, alocação de locais, controle de resultados e geração de relatórios de medalhas.  
+---
 
-O sistema permite:
-- Cadastrar competições e seus detalhes;
-- Inscrever atletas representando países;
-- Alocar locais de forma a evitar conflitos de horário;
-- Registrar resultados e gerar relatórios de medalhas por país.
+## 📘 **Descrição do Sistema**
+
+O **Sistema de Gestão das Olimpíadas (SGO)** tem como objetivo **gerenciar competições, inscrições de atletas, alocação de locais, controle de resultados e geração de relatórios de medalhas**.
+
+### ⚙️ **Funcionalidades Principais**
+- 📆 **Cadastrar competições** e seus detalhes;
+- 🏃‍♂️ **Inscrever atletas** representando países;
+- 🏟️ **Alocar locais** de forma a evitar conflitos de horário;
+- 🏁 **Registrar resultados** e vencedores;
+- 🥇 **Gerar relatórios de medalhas** por país.
 
 ---
 
-## 👥 Histórias de Usuário
+## 👥 **Histórias de Usuário**
 
-**US01 — Cadastrar Competição**  
-> Como organizador, quero cadastrar novas competições com nome, modalidade, data, horário e local, para que sejam incluídas no cronograma oficial.
-
-**US02 — Inscrever Atleta**  
-> Como atleta, quero me inscrever em uma competição específica representando meu país, para participar oficialmente dos jogos.
-
-**US03 — Alocar Local**  
-> Como administrador, quero alocar locais para cada competição sem sobreposição de horários, garantindo o uso adequado das instalações.
-
-**US04 — Registrar Resultados**  
-> Como juiz, quero registrar os vencedores e classificados de cada competição, para atualizar o quadro de medalhas.
-
-**US05 — Gerar Relatório de Medalhas**  
-> Como comitê organizador, quero visualizar o total de medalhas de cada país (ouro, prata e bronze), para divulgar os resultados oficiais.
+| Código | História de Usuário | Papel |
+|--------|---------------------|--------|
+| **US01** | Como **organizador**, quero cadastrar novas competições com nome, modalidade, data, horário e local, para que sejam incluídas no cronograma oficial. | 🧑‍💼 Organizador |
+| **US02** | Como **atleta**, quero me inscrever em uma competição específica representando meu país, para participar oficialmente dos jogos. | 🏃‍♂️ Atleta |
+| **US03** | Como **administrador**, quero alocar locais para cada competição sem sobreposição de horários, garantindo o uso adequado das instalações. | 🧑‍💻 Administrador |
+| **US04** | Como **juiz**, quero registrar os vencedores e classificados de cada competição, para atualizar o quadro de medalhas. | ⚖️ Juiz |
+| **US05** | Como **comitê organizador**, quero visualizar o total de medalhas de cada país (ouro, prata e bronze), para divulgar os resultados oficiais. | 🎖️ Comitê |
 
 ---
+
+## 🎯 **Diagramas UML**
+
+A seguir estão todos os diagramas UML exigidos no trabalho, modelando o **SGO** conforme as regras de negócio descritas.
+
+---
+
+### 🧩 **Diagrama de Caso de Uso**
+
+```mermaid
+graph TD
+  A[👤 Organizador] --> B(Gerenciar Competição)
+  A --> C(Alocar Local)
+  A --> D(Gerenciar Atletas)
+  E[🏃‍♂️ Atleta] --> F(Inscrever-se em Competição)
+  G[⚖️ Juiz] --> H(Salvar Resultados)
+  I[🎖️ Comitê] --> J(Gerar Relatório de Medalhas)
+
 
 ##  Diagrama de Caso de Uso 
 
@@ -167,57 +180,69 @@ class DB database;
 flowchart TB
     %% --- Camada do Usuário ---
     subgraph USERS [Dispositivos dos Usuários]
-        LPT[Laptop Gerente]
-        PHN[Smartphone Técnico]
-        TAB[Tablet Coordenador]
+        ADM[Laptop Administrador]
+        ORG[Tablet Organizador]
+        ATL[Smartphone Atleta]
     end
 
-    %% --- Zona Desmilitarizada ---
+    %% --- Zona Desmilitarizada (Acesso Web) ---
     subgraph DMZ [Zona Desmilitarizada]
         FW1[Firewall Frontal]
         LB[Balanceador de Carga]
-        WS1[Servidor Web A]
+        WEB["Servidor Web - Interface SGO"]
     end
 
-    %% --- Camada de Aplicação ---
+    %% --- Camada de Aplicação (Lógica do Sistema) ---
     subgraph APP [Camada de Aplicação]
-        FW2[Firewall Aplicação]
-        AS1[Servidor App 1]
-        AS2[Servidor App 2]
+        FW2[Firewall Interno]
+        MOD1["Módulo de Inscrições"]
+        MOD2["Módulo de Alocação de Locais"]
+        MOD3["Módulo de Resultados e Relatórios"]
     end
 
     %% --- Camada de Dados ---
     subgraph DATA [Camada de Dados]
-        DB1[(Banco Principal)]
-        DB2[(Banco Backup)]
-        BS[Armazenamento de Backup]
+        DB1[("Banco de Dados SGO")]
+        BKP[("Servidor de Backup")]
     end
 
-    %% --- Sistemas Externos ---
+    %% --- Sistemas Externos (Integrações futuras) ---
     subgraph EXT [Sistemas Externos]
-        API1[API de Pagamentos]
-        API2[Sistema de Notificações]
+        API1["API Comitê Olímpico Internacional"]
+        API2["Sistema de Notificações por E-mail"]
     end
 
     %% --- Conexões ---
-    USERS --> DMZ
-    DMZ --> APP
-    APP --> DATA
-    APP --> EXT
+    USERS --> FW1
+    FW1 --> LB
+    LB --> WEB
+    WEB --> FW2
+    FW2 --> MOD1
+    FW2 --> MOD2
+    FW2 --> MOD3
+    MOD1 --> DB1
+    MOD2 --> DB1
+    MOD3 --> DB1
+    DB1 --> BKP
+    MOD3 --> API2
+    MOD1 --> API1
 
-    %% --- Definição de cores ---
-    classDef user fill:#cce5ff,stroke:#004085,stroke-width:1px;
-    classDef dmz fill:#fff3cd,stroke:#856404,stroke-width:1px;
-    classDef app fill:#d4edda,stroke:#155724,stroke-width:1px;
-    classDef data fill:#f8d7da,stroke:#721c24,stroke-width:1px;
-    classDef ext fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;
+    %% --- Definição de cores (com texto preto) ---
+    classDef user fill:#cce5ff,stroke:#004085,stroke-width:1px,color:#000;
+    classDef dmz fill:#fff3cd,stroke:#856404,stroke-width:1px,color:#000;
+    classDef app fill:#d4edda,stroke:#155724,stroke-width:1px,color:#000;
+    classDef data fill:#f8d7da,stroke:#721c24,stroke-width:1px,color:#000;
+    classDef ext fill:#e2e3e5,stroke:#6c757d,stroke-width:1px,color:#000;
 
     %% --- Aplicando cores ---
-    class LPT,PHN,TAB user;
-    class FW1,LB,WS1 dmz;
-    class FW2,AS1,AS2 app;
-    class DB1,DB2,BS data;
+    class ADM,ORG,ATL user;
+    class FW1,LB,WEB dmz;
+    class FW2,MOD1,MOD2,MOD3 app;
+    class DB1,BKP data;
     class API1,API2 ext;
+
+   ```
+
 
 
 
