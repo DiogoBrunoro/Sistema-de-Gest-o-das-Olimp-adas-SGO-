@@ -33,21 +33,10 @@ A seguir estão todos os diagramas UML exigidos no trabalho, modelando o **SGO**
 
 ---
 
-### 🧩 **Diagrama de Caso de Uso**
+###  **Diagrama de Caso de Uso**
 
 ```mermaid
-graph TD
-  A[👤 Organizador] --> B(Gerenciar Competição)
-  A --> C(Alocar Local)
-  A --> D(Gerenciar Atletas)
-  E[🏃‍♂️ Atleta] --> F(Inscrever-se em Competição)
-  G[⚖️ Juiz] --> H(Salvar Resultados)
-  I[🎖️ Comitê] --> J(Gerar Relatório de Medalhas)
 
-
-##  Diagrama de Caso de Uso 
-
-```mermaid
 graph TD
   A[👤 Organizador] --> B(Gerenciar Competição)
   A --> C(Alocar Local)
@@ -59,7 +48,7 @@ graph TD
 ```
 ---
 
-##  Diagrama de Classes e de Pacotes 
+##  **Diagrama de Classes e de Pacotes**
 
 ```mermaid
 classDiagram
@@ -131,7 +120,7 @@ graph LR
 
 ---
 
-## Diagrama de Componentes
+## **Diagrama de Componentes**
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
@@ -173,7 +162,7 @@ class DB database;
 ```
 ---
 
-## Diagrama de Implantação
+## **Diagrama de Implantação**
 
 ```mermaid
 
