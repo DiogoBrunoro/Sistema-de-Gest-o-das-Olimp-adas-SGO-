@@ -32,168 +32,194 @@ O sistema permite:
 
 ---
 
-## 🧩 Diagrama de Caso de Uso (2,5 pts)
+##  Diagrama de Caso de Uso 
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
-usecaseDiagram
-  actor "Organizador" as O
-  actor "Atleta" as A
-  actor "Juiz" as J
-  actor "Comitê" as C
+graph TD
+  A[👤 Organizador] --> B(Gerenciar Competição)
+  A --> C(Alocar Local)
+  A --> D(Gerenciar Atletas)
+  E[🏃‍♂️ Atleta] --> F(Inscrever-se em Competição)
+  G[⚖️ Juiz] --> H(Salvar Resultados)
+  I[🎖️ Comitê] --> J(Gerar Relatório de Medalhas)
 
-  O --> (Cadastrar Competição)
-  A --> (Inscrever-se em Competição)
-  O --> (Alocar Local)
-  J --> (Registrar Resultados)
-  C --> (Gerar Relatório de Medalhas)
-
-  (Cadastrar Competição) --> (Competição)
-  (Registrar Resultados) --> (Resultados)
 ```
-
 ---
 
-## 🧱 Diagrama de Classes e Pacotes (2,5 pts)
+##  Diagrama de Classes e de Pacotes 
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
 classDiagram
-  class Atleta {
-    +id: int
-    +nome: string
-    +pais: Pais
-    +inscreverCompeticao()
-  }
-
-  class Competicao {
-    +id: int
-    +modalidade: string
-    +data: date
-    +horario: time
-    +local: Local
-    +atletas: List<Atleta>
-    +registrarResultado()
-  }
-
-  class Local {
-    +id: int
-    +nome: string
-    +endereco: string
-    +verificarDisponibilidade()
-  }
-
-  class Resultado {
-    +id: int
-    +competicao: Competicao
-    +ouro: Atleta
-    +prata: Atleta
-    +bronze: Atleta
-  }
-
+    class Atleta {
+      +id: int
+      +nome: string
+      +idade: int
+      +pais: Pais
+      +competicoes: List<Competicao>
+      +inscreverCompeticao(c: Competicao)
+      +consultarCompeticoes()
+    }
+    
   class Pais {
-    +nome: string
     +codigo: string
+    +nome: string
     +medalhasOuro: int
     +medalhasPrata: int
     +medalhasBronze: int
+    +atualizarMedalhas(tipo: string)
   }
+    
+class Competicao {
+  +id: int
+  +modalidade: string
+  +data: date
+  +horario: time
+  +local: Local
+  +atletas: List<Atleta>
+  +resultado: Resultado
+  +adicionarAtleta(a: Atleta)
+  +registrarResultado(r: Resultado)
+}
+    
 
-  Atleta --> Pais
-  Competicao --> Local
-  Competicao --> Atleta : participa
-  Resultado --> Competicao
-  Resultado --> Atleta : vencedores
-  Pais "1" o-- "*" Atleta
+class Local {
+  +id: int
+  +nome: string
+  +endereco: string
+  +capacidade: int
+  +verificarDisponibilidade(data: date, horario: time)
+}
 
-  package "Gerenciamento" {
-    class Competicao
-    class Local
-  }
+class Resultado {
+  +id: int
+  +competicao: Competicao
+  +ouro: Atleta
+  +prata: Atleta
+  +bronze: Atleta
+  +registrarMedalhistas(ouro: Atleta, prata: Atleta, bronze: Atleta)
+}
+    Competicao "1" -- "*" Atleta
+    Competicao "1" -- "1" Local
+    Competicao "1" -- "1" Resultado
+    Atleta "1" -- "1" Pais
 
-  package "Participantes" {
-    class Atleta
-    class Pais
-  }
-
-  package "Resultados" {
-    class Resultado
-  }
 ```
 
 ---
-
-## 🧠 Diagrama de Componentes (2,5 pts)
 
 ```mermaid
-%%{init: {'theme': 'neutral'}}%%
 graph LR
-  UI[Interface do Usuário] --> INS[Módulo de Inscrições]
-  UI --> COMP[Módulo de Competições]
-  UI --> REL[Módulo de Relatórios]
-  
-  INS --> DB[(Banco de Dados)]
-  COMP --> DB
-  REL --> DB
+  Participantes[📦 Participantes] --> Gerenciamento[📦 Gerenciamento]
+  Gerenciamento --> Resultados[📦 Resultados]
+  Resultados --> Medalhas[📦 Relatórios]
+  Participantes --> Medalhas
 
-  subgraph Backend
-    INS
-    COMP
-    REL
-  end
-
-  subgraph Infraestrutura
-    DB
-  end
 ```
 
 ---
 
-## 🖥️ Diagrama de Implantação (2,5 pts)
+## Diagrama de Componentes
 
 ```mermaid
 %%{init: {'theme': 'neutral'}}%%
 graph TD
-  User[💻 Usuário] -->|HTTP/HTTPS| WebServer[🌐 Servidor Web]
-  WebServer -->|REST API| AppServer[⚙️ Servidor de Aplicação]
-  AppServer -->|JDBC/SQL| DB[(🗄️ Banco de Dados SGO)]
 
-  subgraph Cloud["☁️ Infraestrutura de TI"]
-    WebServer
-    AppServer
-    DB
-  end
+%% --- Camada de apresentação ---
+UI[Interface do Usuario Web]
+
+%% --- Camada de negócio ---
+INS[Modulo de Inscricoes]
+COMP[Modulo de Competicoes]
+RES[Modulo de Resultados]
+REL[Modulo de Relatorios]
+
+%% --- Camada de persistência ---
+DB[(Banco de Dados SGO)]
+
+%% --- Estrutura e conexões ---
+UI --> INS
+UI --> COMP
+UI --> REL
+INS --> COMP
+COMP --> RES
+RES --> REL
+INS --> DB
+COMP --> DB
+RES --> DB
+REL --> DB
+
+%% --- Classes visuais simulando camadas ---
+classDef frontend fill:#f4f4f4,stroke:#333,stroke-width:1px;
+classDef backend fill:#e0f7fa,stroke:#006064,stroke-width:1px;
+classDef database fill:#fff3e0,stroke:#ef6c00,stroke-width:1px;
+
+class UI frontend;
+class INS,COMP,RES,REL backend;
+class DB database;
+
 ```
-
 ---
 
-## 📦 Estrutura do Repositório
+## Diagrama de Implantação
+
+```mermaid
+
+flowchart TB
+    %% --- Camada do Usuário ---
+    subgraph USERS [Dispositivos dos Usuários]
+        LPT[Laptop Gerente]
+        PHN[Smartphone Técnico]
+        TAB[Tablet Coordenador]
+    end
+
+    %% --- Zona Desmilitarizada ---
+    subgraph DMZ [Zona Desmilitarizada]
+        FW1[Firewall Frontal]
+        LB[Balanceador de Carga]
+        WS1[Servidor Web A]
+    end
+
+    %% --- Camada de Aplicação ---
+    subgraph APP [Camada de Aplicação]
+        FW2[Firewall Aplicação]
+        AS1[Servidor App 1]
+        AS2[Servidor App 2]
+    end
+
+    %% --- Camada de Dados ---
+    subgraph DATA [Camada de Dados]
+        DB1[(Banco Principal)]
+        DB2[(Banco Backup)]
+        BS[Armazenamento de Backup]
+    end
+
+    %% --- Sistemas Externos ---
+    subgraph EXT [Sistemas Externos]
+        API1[API de Pagamentos]
+        API2[Sistema de Notificações]
+    end
+
+    %% --- Conexões ---
+    USERS --> DMZ
+    DMZ --> APP
+    APP --> DATA
+    APP --> EXT
+
+    %% --- Definição de cores ---
+    classDef user fill:#cce5ff,stroke:#004085,stroke-width:1px;
+    classDef dmz fill:#fff3cd,stroke:#856404,stroke-width:1px;
+    classDef app fill:#d4edda,stroke:#155724,stroke-width:1px;
+    classDef data fill:#f8d7da,stroke:#721c24,stroke-width:1px;
+    classDef ext fill:#e2e3e5,stroke:#6c757d,stroke-width:1px;
+
+    %% --- Aplicando cores ---
+    class LPT,PHN,TAB user;
+    class FW1,LB,WS1 dmz;
+    class FW2,AS1,AS2 app;
+    class DB1,DB2,BS data;
+    class API1,API2 ext;
+
+
 
 ```
-/sgo
-├── README.md
-├── imagens/
-│   ├── diagrama-de-caso-de-uso.png
-│   ├── diagrama-de-classes.png
-│   ├── diagrama-de-componentes.png
-│   ├── diagrama-de-implantacao.png
-└── modelagens/
-    ├── diagrama-de-caso-de-uso.drawio
-    ├── diagrama-de-classes.drawio
-    ├── diagrama-de-componentes.drawio
-    └── diagrama-de-implantacao.drawio
-```
 
----
-
-## 📚 Observações
-- O projeto pode ser feito individualmente ou em dupla.
-- Entrega via **GitHub** com link no **Canvas**.
-- Não é necessário desenvolver o código, apenas a **modelagem UML**.
-
----
-
-> 👨‍🏫 **Professor:** João Paulo Carneiro Aramuni  
-> **Curso:** Engenharia de Software — 4º período  
-> **Disciplina:** Projeto de Software  
-> **Valor:** 10 pontos
